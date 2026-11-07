@@ -1,98 +1,124 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Panel</title>
-  <style>
-    :root { --bg:#1e1f22; --card:#2b2d31; --text:#f2f3f5; --muted:#b5bac1; --accent:#5865f2; }
-    * { box-sizing: border-box; }
-    body { margin:0; min-height:100vh; display:grid; place-items:center;
-           background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; }
-    .card { background:var(--card); padding:2.5rem; border-radius:16px; text-align:center;
-            min-width:300px; box-shadow:0 8px 30px rgba(0,0,0,.35); }
-    .btn { display:inline-block; background:var(--accent); color:#fff; padding:.8rem 1.6rem;
-           border-radius:8px; text-decoration:none; font-weight:600; border:0; cursor:pointer; font-size:1rem; }
-    .btn:hover { filter:brightness(1.1); }
-    .btn.ghost { background:transparent; color:var(--muted); border:1px solid #444; margin-top:1.5rem; }
-    img { width:120px; height:120px; border-radius:50%; border:4px solid var(--accent); }
-    h1 { margin:1rem 0 .25rem; } p { color:var(--muted); }
-    .credits { margin:1.25rem 0 0; padding:1rem 1.5rem; background:var(--bg); border-radius:12px; }
-    .credits strong { display:block; font-size:2rem; color:var(--text); }
-    .credits small { color:var(--muted); }
-    .hidden { display:none; }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel</title>
+<style>
+:root{--bg:#f2f3f5;--side:#e3e5e8;--card:#fff;--text:#1e1f22;--muted:#5c5f66;--line:#d4d7dc;--accent:#5865f2;--ok:#248046;--warn:#c27c0e;--bad:#d83c3e}
+@media(prefers-color-scheme:dark){:root{--bg:#1e1f22;--side:#17181a;--card:#2b2d31;--text:#f2f3f5;--muted:#b5bac1;--line:#3a3c42;--ok:#3ba55d;--warn:#faa61a;--bad:#ed4245}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+.hidden{display:none!important}.muted{color:var(--muted)}
+.center{min-height:100vh;display:grid;place-items:center;padding:1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.25rem}
+.btn{display:inline-block;background:var(--accent);color:#fff;padding:.75rem 1.4rem;border-radius:8px;text-decoration:none;font-weight:600;border:0;cursor:pointer;font-size:1rem}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);padding:.5rem 1rem;font-size:.9rem}
+#app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:var(--side);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:.25rem;position:sticky;top:0;height:100vh}
+.me{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}.me img{width:44px;height:44px;border-radius:50%}
+.me b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+nav button{all:unset;display:block;width:100%;padding:.6rem .8rem;border-radius:8px;cursor:pointer;color:var(--muted);box-sizing:border-box}
+nav button:hover{background:var(--line)}nav button.on{background:var(--accent);color:#fff}
+aside .btn.ghost{margin-top:auto}
+main{padding:1.75rem;max-width:960px;width:100%}h2{margin:0 0 1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;margin-bottom:1.25rem}
+.stat small{color:var(--muted)}.stat strong{display:block;font-size:1.8rem;margin-top:.2rem}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:.6rem .5rem;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:500;font-size:.85rem}
+.tag{padding:.15rem .55rem;border-radius:99px;font-size:.8rem;font-weight:600;color:#fff}
+.ok{background:var(--ok)}.warn{background:var(--warn)}.bad{background:var(--bad)}
+.empty{color:var(--muted);text-align:center;padding:1.5rem}
+.note{background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:.8rem 1rem;margin-bottom:1rem;color:var(--muted);font-size:.9rem}
+@media(max-width:720px){#app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}nav{display:flex;flex-wrap:wrap;gap:.25rem;width:100%}nav button{width:auto}aside .btn.ghost{margin:0 0 0 auto}.me{margin:0}}
+</style>
 </head>
 <body>
-  <div class="card" id="login">
-    <h1>Bienvenue</h1>
-    <p>Connecte-toi pour accéder au panel.</p>
-    <a class="btn" id="loginBtn" href="#">Se connecter avec Discord</a>
-    <p id="err" class="hidden" style="color:#f23f43"></p>
-  </div>
+<div class="center" id="login"><div class="card" style="text-align:center;padding:2.5rem">
+  <h1 style="margin-top:0">Bienvenue</h1><p class="muted">Connecte-toi pour accéder à ton panel.</p>
+  <a class="btn" id="loginBtn" href="#">Se connecter avec Discord</a><p id="err" class="hidden" style="color:var(--bad)"></p>
+</div></div>
 
-  <div class="card hidden" id="panel">
-    <img id="avatar" alt="Avatar">
-    <h1 id="username"></h1>
-    <div class="credits">
-      <small>Tes crédits</small>
-      <strong id="credits">…</strong>
-      <small id="creditsInfo"></small>
-    </div>
+<div id="app" class="hidden">
+  <aside>
+    <div class="me"><img id="avatar" alt=""><div><b id="username"></b><small class="muted" id="sync"></small></div></div>
+    <nav id="nav"></nav>
     <button class="btn ghost" id="logout">Se déconnecter</button>
-  </div>
+  </aside>
+  <main id="view"></main>
+</div>
 
-  <script>
-    // ⚠️ Remplace par l'URL de ton backend Render
-    const API_URL = "https://back-en-ak47.onrender.com";
+<script>
+const API_URL = "https://back-en-ak47.onrender.com";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const n = (x) => Number(x || 0).toLocaleString("fr-FR");
+const date = (t) => t ? new Date(t).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+const stat = (l, v) => `<div class="card stat"><small>${l}</small><strong>${v}</strong></div>`;
+const table = (head, rows, empty) => rows.length
+  ? `<div class="card" style="overflow-x:auto"><table><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr>${rows.map((r) => `<tr>${r.map((c) => `<td>${c}</td>`).join("")}</tr>`).join("")}</table></div>`
+  : `<div class="card empty">${empty}</div>`;
 
-    const $ = (id) => document.getElementById(id);
-    $("loginBtn").href = `${API_URL}/auth/discord`;
+function botStatus(b) {
+  if (!b.expiresAt) return '<span class="tag ok">Illimité</span>';
+  const days = Math.ceil((b.expiresAt - Date.now()) / 864e5);
+  if (days <= 0) return '<span class="tag bad">Expiré</span>';
+  return `<span class="tag ${days <= 3 ? "warn" : "ok"}">${days} j restants</span>`;
+}
 
-    // Récupère le token renvoyé par le backend dans l'URL (#token=...)
-    const hash = new URLSearchParams(location.hash.slice(1));
-    if (hash.get("token")) {
-      try { localStorage.setItem("token", hash.get("token")); } catch {}
-    }
-    if (hash.get("error")) {
-      $("err").textContent = "La connexion a échoué, réessaie.";
-      $("err").classList.remove("hidden");
-    }
-    history.replaceState(null, "", location.pathname); // nettoie l'URL
+const PAGES = {
+  overview: (u) => { const d = u.data;
+    const next = d.bots.filter((b) => b.expiresAt && b.expiresAt > Date.now()).sort((a, b) => a.expiresAt - b.expiresAt)[0];
+    return `<h2>Vue d'ensemble</h2><div class="grid">
+      ${stat("Crédits", n(d.credits))}${stat("Bots loués", d.bots.length)}
+      ${stat("Prochaine expiration", next ? date(next.expiresAt) : "—")}${stat("Réputation", n(d.vouches.count) + " vouch")}</div>
+      <h3>Mes bots</h3>${PAGES.bots(u, true)}`; },
+  bots: (u, bare) => { const t = table(["Bot", "Créé le", "Expire le", "Statut"],
+      u.data.bots.map((b) => [esc(b.name), date(b.createdAt), b.expiresAt ? date(b.expiresAt) : "—", botStatus(b)]), "Tu n'as aucun bot loué pour le moment.");
+    return bare ? t : `<h2>Mes bots</h2>${t}`; },
+  credits: (u) => `<h2>Crédits & codes promo</h2><div class="grid">${stat("Solde", n(u.data.credits))}${stat("Codes utilisés", u.data.redeemed.length)}</div>
+    ${table(["Code", "Crédits", "Date"], [...u.data.redeemed].reverse().map((r) => [esc(r.code), "+" + n(r.credits), date(r.at)]), "Aucun code promo utilisé.")}`,
+  referral: (u) => { const r = u.data.referral; return `<h2>Parrainage</h2><div class="grid">
+    ${stat("Personnes invitées", n(r.count))}${stat("Ayant acheté", n(r.paid))}${stat("Crédits gagnés", n(r.earned))}</div>`; },
+  vouches: (u) => `<h2>Réputation</h2><div class="grid">${stat("Vouches reçus", n(u.data.vouches.count))}</div>
+    ${table(["Message", "Date"], [...u.data.vouches.last].reverse().map((v) => [esc(v.text), date(v.at)]), "Aucun vouch pour le moment.")}`,
+  economy: (u) => { const e = u.data.economy;
+    return `<h2>Économie des serveurs</h2>` + (e ? `<div class="grid">${stat("Portefeuille", n(e.coins))}${stat("Banque", n(e.bank))}${stat("Série de daily", e.streak + " j")}</div>
+      <div class="note">Total cumulé sur les serveurs où tu utilises le bot.</div>` : `<div class="card empty">Aucune donnée d'économie pour ton compte.</div>`); },
+  admin: (u) => { const a = u.admin; if (!a) return `<h2>Admin</h2><div class="card empty">Données indisponibles.</div>`;
+    return `<h2>Administration</h2><div class="grid">${stat("Crédits en circulation", n(a.totalCredits))}${stat("Détenteurs", n(a.holders))}
+      ${stat("Clients", n(a.clients))}${stat("Bots actifs", `${n(a.activeBots)} / ${n(a.bots)}`)}</div>
+      <h3>Plus gros soldes</h3>${table(["ID Discord", "Crédits"], a.top.map((t) => [esc(t.id), n(t.credits)]), "Aucun solde.")}`; },
+};
+const TABS = [["overview", "Vue d'ensemble"], ["bots", "Mes bots"], ["credits", "Crédits & promos"], ["referral", "Parrainage"], ["vouches", "Réputation"], ["economy", "Économie"]];
 
-    async function init() {
-      let token = null;
-      try { token = localStorage.getItem("token"); } catch {}
-      if (!token) return;
-      try {
-        const res = await fetch(`${API_URL}/api/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error();
-        const user = await res.json();
-        $("avatar").src = user.avatar;
-        $("username").textContent = user.username;
-        if (user.credits === null) {
-          $("credits").textContent = "—";
-          $("creditsInfo").textContent = "Synchronisation avec le bot en cours, réessaie dans une minute.";
-        } else {
-          $("credits").textContent = user.credits.toLocaleString("fr-FR");
-          const mins = Math.max(0, Math.round((Date.now() - user.creditsUpdatedAt) / 60000));
-          $("creditsInfo").textContent = `Mis à jour il y a ${mins} min`;
-        }
-        $("login").classList.add("hidden");
-        $("panel").classList.remove("hidden");
-      } catch {
-        try { localStorage.removeItem("token"); } catch {}
-      }
-    }
+let user = null, page = "overview";
+function render() {
+  const tabs = user.isAdmin ? [...TABS, ["admin", "Administration"]] : TABS;
+  $("nav").innerHTML = tabs.map(([k, l]) => `<button data-k="${k}" class="${k === page ? "on" : ""}">${l}</button>`).join("");
+  $("nav").querySelectorAll("button").forEach((b) => (b.onclick = () => { page = b.dataset.k; render(); }));
+  $("view").innerHTML = user.synced
+    ? PAGES[page](user)
+    : `<h2>Synchronisation en cours</h2><div class="card empty">Le bot n'a pas encore envoyé ses données. Réessaie dans une minute.</div>`;
+}
 
-    $("logout").onclick = () => {
-      try { localStorage.removeItem("token"); } catch {}
-      location.reload();
-    };
+const hash = new URLSearchParams(location.hash.slice(1));
+if (hash.get("token")) { try { localStorage.setItem("token", hash.get("token")); } catch {} }
+if (hash.get("error")) { $("err").textContent = "La connexion a échoué, réessaie."; $("err").classList.remove("hidden"); }
+history.replaceState(null, "", location.pathname);
+$("loginBtn").href = `${API_URL}/auth/discord`;
+$("logout").onclick = () => { try { localStorage.removeItem("token"); } catch {} location.reload(); };
 
-    init();
-  </script>
+(async () => {
+  let token = null; try { token = localStorage.getItem("token"); } catch {}
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_URL}/api/me`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error();
+    user = await res.json();
+    $("avatar").src = user.avatar; $("username").textContent = user.username;
+    $("sync").textContent = user.synced ? "Mis à jour " + new Date(user.updatedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+    $("login").classList.add("hidden"); $("app").classList.remove("hidden");
+    render();
+  } catch { try { localStorage.removeItem("token"); } catch {} }
+})();
+</script>
 </body>
 </html>
