@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel</title>
+  <style>
+    :root { --bg:#1e1f22; --card:#2b2d31; --text:#f2f3f5; --muted:#b5bac1; --accent:#5865f2; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center;
+           background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; }
+    .card { background:var(--card); padding:2.5rem; border-radius:16px; text-align:center;
+            min-width:300px; box-shadow:0 8px 30px rgba(0,0,0,.35); }
+    .btn { display:inline-block; background:var(--accent); color:#fff; padding:.8rem 1.6rem;
+           border-radius:8px; text-decoration:none; font-weight:600; border:0; cursor:pointer; font-size:1rem; }
+    .btn:hover { filter:brightness(1.1); }
+    .btn.ghost { background:transparent; color:var(--muted); border:1px solid #444; margin-top:1.5rem; }
+    img { width:120px; height:120px; border-radius:50%; border:4px solid var(--accent); }
+    h1 { margin:1rem 0 .25rem; } p { color:var(--muted); }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+  <div class="card" id="login">
+    <h1>Bienvenue</h1>
+    <p>Connecte-toi pour accéder au panel.</p>
+    <a class="btn" id="loginBtn" href="#">Se connecter avec Discord</a>
+    <p id="err" class="hidden" style="color:#f23f43"></p>
+  </div>
+
+  <div class="card hidden" id="panel">
+    <img id="avatar" alt="Avatar">
+    <h1 id="username"></h1>
+    <p>Tu es connecté 🎉</p>
+    <button class="btn ghost" id="logout">Se déconnecter</button>
+  </div>
+
+  <script>
+    // ⚠️ Remplace par l'URL de ton backend Render
+    const API_URL = "https://TON-BACKEND.onrender.com";
+
+    const $ = (id) => document.getElementById(id);
+    $("loginBtn").href = `${API_URL}/auth/discord`;
+
+    // Récupère le token renvoyé par le backend dans l'URL (#token=...)
+    const hash = new URLSearchParams(location.hash.slice(1));
+    if (hash.get("token")) {
+      try { localStorage.setItem("token", hash.get("token")); } catch {}
+    }
+    if (hash.get("error")) {
+      $("err").textContent = "La connexion a échoué, réessaie.";
+      $("err").classList.remove("hidden");
+    }
+    history.replaceState(null, "", location.pathname); // nettoie l'URL
+
+    async function init() {
+      let token = null;
+      try { token = localStorage.getItem("token"); } catch {}
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_URL}/api/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error();
+        const user = await res.json();
+        $("avatar").src = user.avatar;
+        $("username").textContent = user.username;
+        $("login").classList.add("hidden");
+        $("panel").classList.remove("hidden");
+      } catch {
+        try { localStorage.removeItem("token"); } catch {}
+      }
+    }
+
+    $("logout").onclick = () => {
+      try { localStorage.removeItem("token"); } catch {}
+      location.reload();
+    };
+
+    init();
+  </script>
+</body>
+</html>
