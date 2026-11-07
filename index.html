@@ -30,6 +30,9 @@ label{display:grid;gap:.25rem;font-size:.85rem;color:var(--muted)}
 select,input{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:.55rem .7rem;font-size:.95rem;min-width:140px}
 .botcard{margin-bottom:1rem}.botcard h3{margin:0 0 .25rem}
 #toast{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.8rem 1rem;border-radius:10px;max-width:320px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.banner{background:var(--warn);color:#000;border-radius:10px;padding:.7rem 1rem;margin-bottom:1rem;font-weight:600}
+details{margin-top:.75rem}summary{cursor:pointer;color:var(--muted)}
+.chk{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.5rem}.chk label{display:flex;align-items:center;gap:.35rem;color:var(--text)}.chk input{min-width:0}
 .empty{color:var(--muted);text-align:center;padding:1.5rem}
 .note{background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:.8rem 1rem;margin-bottom:1rem;color:var(--muted);font-size:.9rem}
 @media(max-width:720px){#app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}nav{display:flex;flex-wrap:wrap;gap:.25rem;width:100%}nav button{width:auto}aside .btn.ghost{margin:0 0 0 auto}.me{margin:0}}
@@ -89,8 +92,12 @@ const PAGES = {
         <div class="row"><label>Présence<select class="presence">${opts(PRES, b.presence)}</select></label>
           <label>Activité<select class="atype">${opts(ACT, b.activity?.type || "playing")}</select></label>
           <label style="flex:1">Texte<input class="atext" maxlength="128" value="${esc(b.activity?.text || "")}" placeholder="Laisse vide pour retirer l'activité"></label>
-          <button class="btn" data-act="settings">Enregistrer</button></div></div>`).join("") || `<div class="card empty">Tu n'as aucun bot loué pour le moment.</div>`); },
+          <button class="btn" data-act="settings">Enregistrer</button></div>
+        <details><summary>Catégories de commandes</summary><div class="chk">${(u.groups || []).map((g) => `<label><input type="checkbox" class="grp" value="${esc(g)}" ${(b.disabledGroups || []).includes(g) ? "" : "checked"}>${esc(g)}</label>`).join("")}</div>
+          <div class="row"><button class="btn" data-act="groups">Enregistrer les catégories</button></div></details>
+        ${b.botId ? `<p><a href="https://discord.com/oauth2/authorize?client_id=${esc(b.botId)}&scope=bot%20applications.commands&permissions=${esc(u.invitePerms || "8")}" target="_blank" rel="noopener">Inviter ce bot sur un serveur ↗</a></p>` : ""}</div>`).join("") || `<div class="card empty">Tu n'as aucun bot loué pour le moment.</div>`); },
   credits: (u) => `<h2>Crédits & codes promo</h2><div class="grid">${stat("Solde", n(u.data.credits))}${stat("Codes utilisés", u.data.redeemed.length)}</div>
+    <div class="card" style="margin-bottom:1rem"><b>Utiliser un code promo</b><div class="row"><label style="flex:1">Code<input id="promoCode" maxlength="40" placeholder="ABCDE12345"></label><button class="btn" data-act="promo">Valider</button></div></div>
     ${table(["Code", "Crédits", "Date"], [...u.data.redeemed].reverse().map((r) => [esc(r.code), "+" + n(r.credits), date(r.at)]), "Aucun code promo utilisé.")}`,
   referral: (u) => { const r = u.data.referral; return `<h2>Parrainage</h2><div class="grid">
     ${stat("Personnes invitées", n(r.count))}${stat("Ayant acheté", n(r.paid))}${stat("Crédits gagnés", n(r.earned))}</div>`; },
@@ -102,6 +109,13 @@ const PAGES = {
   admin: (u) => { const a = u.admin; if (!a) return `<h2>Admin</h2><div class="card empty">Données indisponibles.</div>`;
     return `<h2>Administration</h2><div class="grid">${stat("Crédits en circulation", n(a.totalCredits))}${stat("Détenteurs", n(a.holders))}
       ${stat("Clients", n(a.clients))}${stat("Bots actifs", `${n(a.activeBots)} / ${n(a.bots)}`)}</div>
+      <div class="card" style="margin-bottom:1rem"><b>Créer un code promo</b><div class="row">
+        <label>Code (vide = aléatoire)<input id="pc" maxlength="40"></label><label>Crédits<input id="pcr" type="number" min="1" value="10"></label>
+        <label>Utilisations<input id="pmu" type="number" min="1" value="1"></label><label>Expire dans (jours)<input id="pex" type="number" min="0" value="0"></label>
+        <button class="btn" data-act="promo_create">Créer</button></div></div>
+      <div class="card" style="margin-bottom:1rem"><b>Ajouter / retirer des crédits</b><div class="row">
+        <label>ID Discord<input id="cid" maxlength="25"></label><label>Montant (négatif pour retirer)<input id="cam" type="number" value="10"></label>
+        <button class="btn" data-act="credits">Appliquer</button></div></div>
       <h3>Plus gros soldes</h3>${table(["ID Discord", "Crédits"], a.top.map((t) => [esc(t.id), n(t.credits)]), "Aucun solde.")}`; },
 };
 const TABS = [["overview", "Vue d'ensemble"], ["bots", "Mes bots"], ["credits", "Crédits & promos"], ["referral", "Parrainage"], ["vouches", "Réputation"], ["economy", "Économie"]];
@@ -125,9 +139,16 @@ async function sendAction(body, btn) {
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("button[data-act]"); if (!b) return;
-  const card = b.closest(".botcard"), key = card.dataset.key;
-  if (b.dataset.act === "renew") sendAction({ type: "renew", key, days: card.querySelector(".plan").value }, b);
-  else sendAction({ type: "settings", key, presence: card.querySelector(".presence").value, activityType: card.querySelector(".atype").value, activityText: card.querySelector(".atext").value }, b);
+  const v = (id) => $(id).value, card = b.closest(".botcard"), key = card?.dataset.key, q = (c) => card.querySelector(c);
+  const A = {
+    renew: () => ({ type: "renew", key, days: q(".plan").value }),
+    settings: () => ({ type: "settings", key, presence: q(".presence").value, activityType: q(".atype").value, activityText: q(".atext").value }),
+    groups: () => ({ type: "groups", key, groups: [...card.querySelectorAll(".grp:not(:checked)")].map((i) => i.value) }),
+    promo: () => ({ type: "promo", code: v("promoCode") }),
+    promo_create: () => ({ type: "promo_create", code: v("pc"), credits: v("pcr"), maxUses: v("pmu"), expiresDays: v("pex") }),
+    credits: () => ({ type: "credits", targetId: v("cid"), amount: v("cam") }),
+  }[b.dataset.act];
+  if (A) sendAction(A(), b);
 });
 
 let user = null, page = "overview";
@@ -135,8 +156,10 @@ function render() {
   const tabs = user.isAdmin ? [...TABS, ["admin", "Administration"]] : TABS;
   $("nav").innerHTML = tabs.map(([k, l]) => `<button data-k="${k}" class="${k === page ? "on" : ""}">${l}</button>`).join("");
   $("nav").querySelectorAll("button").forEach((b) => (b.onclick = () => { page = b.dataset.k; render(); }));
+  const soon = user.synced ? user.data.bots.filter((b) => b.expiresAt && b.expiresAt > Date.now() && b.expiresAt - Date.now() < 3 * 864e5) : [];
+  const banner = soon.length ? `<div class="banner">⚠️ ${soon.map((b) => esc(b.name)).join(", ")} expire${soon.length > 1 ? "nt" : ""} dans moins de 3 jours : pense à prolonger.</div>` : "";
   $("view").innerHTML = user.synced
-    ? PAGES[page](user)
+    ? banner + PAGES[page](user)
     : `<h2>Synchronisation en cours</h2><div class="card empty">Le bot n'a pas encore envoyé ses données. Réessaie dans une minute.</div>`;
 }
 
