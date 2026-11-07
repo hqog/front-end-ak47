@@ -8,19 +8,35 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="center" id="login"><div class="card" style="text-align:center;padding:2.5rem">
-  <h1 style="margin-top:0">Bienvenue</h1><p class="muted">Connecte-toi pour accéder à ton panel.</p>
-  <a class="btn" id="loginBtn" href="#">Se connecter avec Discord</a><p id="err" class="hidden" style="color:var(--bad)"></p>
-</div></div>
+<div class="center" id="login">
+  <div class="login-card">
+    <span class="mark big" aria-hidden="true">P</span>
+    <h1>Bienvenue</h1>
+    <p class="muted">Gère tes bots, tes crédits et ton parrainage depuis un seul endroit.</p>
+    <a class="btn lg" id="loginBtn" href="#">Se connecter avec Discord</a>
+    <p id="err" class="err hidden" role="alert"></p>
+    <ul class="perks">
+      <li>Renouvelle tes bots en un clic</li>
+      <li>Change leur statut et leurs catégories</li>
+      <li>Suis tes crédits, avis et parrainages</li>
+    </ul>
+  </div>
+</div>
 
 <div id="app" class="hidden">
   <aside>
-    <div class="me"><img id="avatar" alt=""><div><b id="username"></b><small class="muted" id="sync"></small></div></div>
-    <nav id="nav"></nav>
-    <button class="btn ghost" id="logout">Se déconnecter</button>
+    <div class="brand"><span class="mark" aria-hidden="true">P</span><b>Panel</b></div>
+    <div class="me">
+      <img id="avatar" alt="">
+      <div><b id="username"></b><small class="muted" id="sync"></small></div>
+    </div>
+    <nav id="nav" aria-label="Navigation principale"></nav>
+    <div class="side-actions">
+      <button class="btn ghost" id="logout" type="button">Se déconnecter</button>
+    </div>
   </aside>
   <main id="view"></main>
-<div id="toast" class="hidden"></div>
+  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
 </div>
 
 <script src="app.js" defer></script>
