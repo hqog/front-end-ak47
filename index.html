@@ -2,41 +2,99 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Panel</title>
+<title>AK47, bot de gestion Discord</title>
+<meta name="description" content="Modération, sécurité, tickets, giveaways, niveaux, musique et casino : un bot de gestion Discord complet et son panel.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://cdn.discordapp.com data:; connect-src https://back-en-ak47.onrender.com; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="center" id="login">
-  <div class="login-card">
-    <span class="mark big" aria-hidden="true">P</span>
-    <h1>Bienvenue</h1>
-    <p class="muted">Gère tes bots, tes crédits et ton parrainage depuis un seul endroit.</p>
-    <a class="btn lg" id="loginBtn" href="#">Se connecter avec Discord</a>
-    <p id="err" class="err hidden" role="alert"></p>
-    <ul class="perks">
-      <li>Renouvelle tes bots en un clic</li>
-      <li>Change leur statut et leurs catégories</li>
-      <li>Suis tes crédits, avis et parrainages</li>
-    </ul>
+<div id="login" class="landing">
+  <header class="top">
+    <span class="brand">AK47</span>
+    <a class="btn ghost small" href="#" data-login>Connexion</a>
+  </header>
+
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">Bot de gestion Discord</p>
+        <h1>Ton serveur, sous contrôle.</h1>
+        <p class="lead">Modération, sécurité, tickets, giveaways, niveaux, musique, casino. Un seul bot, 20 catégories de commandes et un panel pour tout piloter depuis ton navigateur.</p>
+        <a class="btn big" id="loginBtn" href="#" data-login>Se connecter avec Discord</a>
+        <p id="err" class="hidden" role="alert"></p>
+        <p class="muted"><small>Connexion avec ton compte Discord, sans mot de passe.</small></p>
+      </div>
+
+      <div class="embed" aria-hidden="true">
+        <div class="embed-head"><span class="av">A</span><b>AK47</b><span class="bottag">BOT</span></div>
+        <div class="embed-card">
+          <h3>Aide de AK47</h3>
+          <p>Mon préfixe est <code>+</code><br>Choisis une catégorie dans le menu ci-dessous pour voir ses commandes.</p>
+      <p class="line"><b>Modération</b><small>Sanctions, avertissements, historique</small></p>
+      <p class="line"><b>Sécurité</b><small>Anti-raid, anti-nuke, audit, lockdown, liste blanche</small></p>
+      <p class="line"><b>Tickets</b><small>Support privé avec le staff</small></p>
+      <p class="line"><b>Giveaway</b><small>Créer, modifier, terminer et relancer des giveaways</small></p>
+      <p class="line"><b>Niveaux</b><small>XP, classement, rôles de niveau, invitations</small></p>
+          <div class="menu"><span>Choisis une catégorie</span><span>▾</span></div>
+          <small class="foot">Préfixe +</small>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>20 catégories, tout ce qu’il te faut</h2>
+      <ul class="tiles">
+      <li><b>Modération</b><span>Sanctions, avertissements, historique</span></li>
+      <li><b>Rôles</b><span>Gérer et consulter les rôles</span></li>
+      <li><b>Listes</b><span>Membres, boosters, vocal, nouveaux arrivants</span></li>
+      <li><b>Salon</b><span>Verrouillage, visibilité, nom, mode lent</span></li>
+      <li><b>Configuration</b><span>Logs, bienvenue, rôle auto, compteurs, automod</span></li>
+      <li><b>Logs</b><span>Salons de logs créés automatiquement</span></li>
+      <li><b>Sécurité</b><span>Anti-raid, anti-nuke, audit, lockdown, liste blanche</span></li>
+      <li><b>Niveaux</b><span>XP, classement, rôles de niveau, invitations</span></li>
+      <li><b>Giveaway</b><span>Créer, modifier, terminer et relancer des giveaways</span></li>
+      <li><b>Réseaux</b><span>Annonces de lives Twitch, TikTok et vidéos YouTube</span></li>
+      <li><b>Tickets</b><span>Support privé avec le staff</span></li>
+      <li><b>Suggestions</b><span>Proposer une idée, la voter, la valider</span></li>
+      <li><b>Musique</b><span>Musique YouTube en vocal : file, volume, boucle, effets</span></li>
+      <li><b>Vocal</b><span>Mute, déplacements, ban vocal, temps en vocal</span></li>
+      <li><b>Informations</b><span>Profil, serveur, avatar, bannière</span></li>
+      <li><b>Bot</b><span>Nom, photo, bannière et statut du bot</span></li>
+      <li><b>Shop</b><span>Vouches, profil, paiements, boutique, classement</span></li>
+      <li><b>Utilitaire</b><span>Tags, AFK, rappels, sondage, QR code, météo</span></li>
+      <li><b>Fun</b><span>Câlins, jeux, mèmes, blagues</span></li>
+      <li><b>Casino</b><span>Coins, daily, banque, slots, roulette, blackjack</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Un panel pour tout gérer</h2>
+      <div class="feats">
+        <div><h3>Tes bots</h3><p class="muted">Suis la date d’expiration de chaque bot et renouvelle en un clic.</p></div>
+        <div><h3>Personnalisation</h3><p class="muted">Statut, activité et catégories actives, avec un aperçu en direct.</p></div>
+        <div><h3>Parrainage et avis</h3><p class="muted">Retrouve tes filleuls, tes crédits gagnés et les avis reçus.</p></div>
+        <div><h3>Codes promo</h3><p class="muted">Active un code et garde l’historique de tes actions.</p></div>
+      </div>
+    </section>
+
+    <section class="final">
+      <h2>Prêt à prendre le contrôle ?</h2>
+      <a class="btn big" href="#" data-login>Se connecter avec Discord</a>
+    </section>
   </div>
+
+  <footer>AK47, bot de gestion Discord</footer>
 </div>
 
 <div id="app" class="hidden">
   <aside>
-    <div class="brand"><span class="mark" aria-hidden="true">P</span><b>Panel</b></div>
-    <div class="me">
-      <img id="avatar" alt="">
-      <div><b id="username"></b><small class="muted" id="sync"></small></div>
-    </div>
-    <nav id="nav" aria-label="Navigation principale"></nav>
-    <div class="side-actions">
-      <button class="btn ghost" id="logout" type="button">Se déconnecter</button>
-    </div>
+    <div class="me"><img id="avatar" alt=""><div><b id="username"></b><small class="muted" id="sync"></small></div></div>
+    <nav id="nav"></nav>
+    <button class="btn ghost" id="logout">Se déconnecter</button>
   </aside>
   <main id="view"></main>
-  <div id="toast" class="hidden" role="status" aria-live="polite"></div>
+<div id="toast" class="hidden"></div>
 </div>
 
 <script src="app.js" defer></script>
